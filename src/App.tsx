@@ -1,4 +1,10 @@
+import LogionClientContextProvider from "./logion-chain/LogionClientContext";
+import Root from "./Root";
 
 export default function App() {
-    return <div>logion-idloc-gateway</div>
+    return (
+        <LogionClientContextProvider>
+            <Root/>
+        </LogionClientContextProvider>
+    )
 }

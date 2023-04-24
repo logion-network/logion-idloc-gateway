@@ -7,6 +7,7 @@ module.exports = {
                 config.resolve.fallback = {};
             }
             config.resolve.fallback.process = require.resolve('process/browser');
+            config.resolve.fallback.fs = false;
 
             config.plugins.push(
                 new webpack.ProvidePlugin({
