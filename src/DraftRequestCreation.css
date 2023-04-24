@@ -1,0 +1,13 @@
+.DraftRequestCreation form {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.DraftRequestCreation .button-area {
+    margin-top: 20px;
+}
+
+.DraftRequestCreation .file-selector {
+    margin-top: 20px;
+}
