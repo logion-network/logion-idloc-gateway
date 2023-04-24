@@ -1,10 +1,10 @@
 import LogionClientContextProvider from "./logion-chain/LogionClientContext";
-import Header from "./Header";
+import Root from "./Root";
 
 export default function App() {
     return (
         <LogionClientContextProvider>
-            <Header/>
+            <Root/>
         </LogionClientContextProvider>
     )
 }

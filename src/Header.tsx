@@ -1,40 +1,36 @@
 import Logo from "./Logo";
 import { Row, Col } from "react-bootstrap";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
-
+import "./Header.css";
+import LegalOfficer from "./LegalOfficer";
+import YourAddress from "./YourAddress";
+import Marketplace from "./Marketplace";
 
 export default function Header() {
-
     const { client } = useLogionClientContext();
 
     return (
-        <Row>
-            <Col>
-                <Logo size={ 200 } />
+        <Row className="Header">
+            <Col md={3}>
+                <Logo size={ 170 } />
             </Col>
-            <Info userAddress={ client?.currentAddress?.address } />
+            <Col>
+                <Row>
+                    <Col>
+                        <LegalOfficer/>
+                    </Col>
+                    { client?.currentAddress?.address !== undefined &&
+                        <Col>
+                            <YourAddress/>
+                        </Col>
+                    }
+                </Row>
+                <Row>
+                    <Col>
+                        <Marketplace/>
+                    </Col>
+                </Row>
+            </Col>
         </Row>
     )
 }
-
-interface Props {
-    userAddress: string | undefined;
-}
-
-function Info(props: Props) {
-    const { userAddress } = props;
-    return (
-        <>
-            <Col>
-                <p>Your Legal Officer: Alice (alice@logion.network)</p>
-                <p>Marketplace ID: nnn</p>
-            </Col>
-            { userAddress !== undefined &&
-                <Col>
-                    <p>Your address: { userAddress }</p>
-                </Col>
-            }
-        </>
-    )
-}
-
