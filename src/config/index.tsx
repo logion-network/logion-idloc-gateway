@@ -39,8 +39,7 @@ const envVars: EnvConfigType = envVarNames.reduce<EnvConfigType>((mem, n) => {
     return mem;
 }, {});
 
-// TODO Check why CONFIG is not resolved.
-// declare var CONFIG: any;
-// const config: ConfigType = { ...DEFAULT_CONFIG, ...configEnv, ...envVars, ...CONFIG };
-const config: ConfigType = { ...DEFAULT_CONFIG, ...configEnv, ...envVars };
+declare var CONFIG: any;
+
+const config: ConfigType = { ...DEFAULT_CONFIG, ...configEnv, ...envVars, ...CONFIG };
 export default config;

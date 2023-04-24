@@ -1326,7 +1326,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.11.0, @babel/preset-env@npm:^7.12.1, @babel/preset-env@npm:^7.16.4, @babel/preset-env@npm:^7.21.4":
+"@babel/preset-env@npm:^7.11.0, @babel/preset-env@npm:^7.12.1, @babel/preset-env@npm:^7.16.4":
   version: 7.21.4
   resolution: "@babel/preset-env@npm:7.21.4"
   dependencies:
@@ -10526,7 +10526,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "logion-idloc-gateway@workspace:."
   dependencies:
-    "@babel/preset-env": ^7.21.4
     "@craco/craco": ^6.4.5
     "@logion/extension": ^0.5.12-1
     "@types/react-dom": ^18.0.6
