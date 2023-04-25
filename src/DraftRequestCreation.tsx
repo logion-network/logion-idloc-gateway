@@ -1,24 +1,23 @@
 import { ChangeEvent, useCallback, useState } from "react";
-import { Button, Col, Form, FormControl, FormGroup, FormLabel, Row } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import FormField from "./FormField";
-import "./DraftRequestCreation.css";
 import Centered from "./Centered";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
-
-interface FormData {
-    firstName: string;
-    lastName: string;
-    address: string;
-    zip: string;
-    city: string;
-    country: string;
-    email: string;
-    phoneNumber: string;
-}
+import RequestFormField, { RequestFormData } from "./RequestFormFields";
 
 export default function DraftRequestCreation() {
-    const { control, handleSubmit, formState: { errors } } = useForm<FormData>();
+    const { control, handleSubmit, formState: { errors } } = useForm<RequestFormData>({
+        values: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            address: "",
+            city: "",
+            country: "",
+            zip: "",
+        }
+    });
     const [ process, setProcess ] = useState<File>();
     const [ processError, setProcessError ] = useState<string>();
     const [ proof, setProof ] = useState<File>();
@@ -34,7 +33,7 @@ export default function DraftRequestCreation() {
         }
     }, [ process, proof ]);
 
-    const createDraftRequest = useCallback((formData: FormData) => {
+    const createDraftRequest = useCallback((formData: RequestFormData) => {
         validateFiles();
 
         if(process && proof && client) {
@@ -83,170 +82,14 @@ export default function DraftRequestCreation() {
             <Form
                 onSubmit={handleSubmit(createDraftRequest, handleInvalidForm)}
             >
-                <Row>
-                    <Col>
-                        <FormField
-                            fieldName="firstName"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="First name"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="First name is required"
-                        />
-                    </Col>
-                    <Col>
-                        <FormField
-                            fieldName="lastName"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="Last name"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="Last name is required"
-                        />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <FormField
-                            fieldName="email"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="E-mail"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="E-mail is required"
-                        />
-                    </Col>
-                    <Col>
-                        <FormField
-                            fieldName="phoneNumber"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="Phone number"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="Phone number is required"
-                        />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <FormField
-                            fieldName="address"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="Address"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="Address is required"
-                        />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <FormField
-                            fieldName="zip"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="ZIP"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="ZIP is required"
-                        />
-                    </Col>
-                    <Col>
-                        <FormField
-                            fieldName="city"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="City"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="City is required"
-                        />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <FormField
-                            fieldName="country"
-                            control={ control }
-                            errors={ errors }
-                            render={ field => (
-                                <FormControl
-                                    placeholder="Country"
-                                    { ...field }
-                                />
-                            )}
-                            requiredMessage="Country is required"
-                        />
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <FormGroup
-                            className="file-selector"
-                        >
-                            <FormControl
-                                type="file"
-                                onChange={ handleProcess }
-                                accept="application/pdf"
-                                isInvalid={ processError !== undefined }
-                            />
-                            <Form.Control.Feedback
-                                id="process-feedback"
-                                type="invalid"
-                            >
-                                { processError }
-                            </Form.Control.Feedback>
-                            <FormLabel>Identity LOC process and related obligations signed by the Requester</FormLabel>
-                        </FormGroup>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <FormGroup
-                            className="file-selector"
-                        >
-                            <FormControl
-                                type="file"
-                                onChange={ handleProof }
-                                accept="application/pdf"
-                                isInvalid={ proofError !== undefined }
-                            />
-                            <Form.Control.Feedback
-                                id="proof-feedback"
-                                type="invalid"
-                            >
-                                { proofError }
-                            </Form.Control.Feedback>
-                            <FormLabel>Proof of identity</FormLabel>
-                        </FormGroup>
-                    </Col>
-                </Row>
+                <RequestFormField
+                    control={ control }
+                    errors={ errors }
+                    handleProcess={ handleProcess }
+                    handleProof={ handleProof }
+                    processError={ processError }
+                    proofError={ proofError }
+                />
                 <Row>
                     <Col>
                         <div className="button-area">

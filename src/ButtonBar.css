@@ -1,0 +1,8 @@
+.ButtonBar {
+    display: flex;
+    justify-content: center;
+}
+
+.ButtonBar > *:not(:first-child) {
+    margin-left: 20px;
+}

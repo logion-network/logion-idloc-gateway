@@ -8,6 +8,7 @@ export interface Props<F extends FieldValues> {
     errors: FieldErrors<F>;
     render: (field: ControllerRenderProps<F, FieldPath<F>> & { isInvalid: boolean, id: string }) => React.ReactElement;
     requiredMessage: string;
+    disabled?: boolean;
 }
 
 export default function FormField<F extends FieldValues>(props: Props<F>) {

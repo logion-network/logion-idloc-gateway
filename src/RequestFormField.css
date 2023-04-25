@@ -1,13 +1,14 @@
-.DraftRequestCreation form {
+.RequestFormField {
     width: 70%;
     margin-left: auto;
     margin-right: auto;
 }
 
-.DraftRequestCreation .button-area {
+.RequestFormField .button-area {
     margin-top: 20px;
 }
 
-.DraftRequestCreation .file-selector {
+.RequestFormField .file-selector {
     margin-top: 20px;
+    text-align: left;
 }
