@@ -1,0 +1,9 @@
+.RequestStatus {
+    text-align: center;
+}
+
+.RequestStatus h2 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1.2rem;
+}
