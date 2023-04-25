@@ -3,6 +3,7 @@ import { Button, Col, Form, FormControl, FormGroup, FormLabel, Row } from "react
 import { Control, FieldErrors } from "react-hook-form";
 import FormField from "./FormField";
 import "./RequestFormField.css";
+import { PROCESS_FILE_NATURE, PROOF_FILE_NATURE } from "./Template";
 
 export interface RequestFormData {
     firstName: string;
@@ -23,6 +24,8 @@ export interface Props {
     handleProof: (event: ChangeEvent<HTMLInputElement>) => void;
     proofError?: string;
     disabled?: boolean;
+    downloadProcess?: () => void;
+    downloadProof?: () => void;
 }
 
 export default function RequestFormField(props: Props) {
@@ -211,10 +214,18 @@ export default function RequestFormField(props: Props) {
                 props.disabled &&
                 <Row>
                     <Col>
-                        { /* TODO onClick download file using draft request state */ }
-                        <Button variant="link">Identity LOC process and related obligations signed by the Requester</Button><br/>
-                        { /* TODO onClick download file using draft request state */ }
-                        <Button variant="link">Proof of identity</Button>
+                        <Button
+                            variant="link"
+                            onClick={ props.downloadProcess }
+                        >
+                            { PROCESS_FILE_NATURE }
+                        </Button><br/>
+                        <Button
+                            variant="link"
+                            onClick={ props.downloadProof }
+                        >
+                            { PROOF_FILE_NATURE }
+                        </Button>
                     </Col>
                 </Row>
             }

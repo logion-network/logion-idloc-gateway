@@ -1,9 +1,11 @@
+import { DraftRequest, HashOrContent } from "@logion/client";
 import { ChangeEvent, useCallback, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import Centered from "./Centered";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
 import RequestFormField, { RequestFormData } from "./RequestFormFields";
+import { PROCESS_FILE_NATURE, TEMPLATE_ID } from "./Template";
 
 export default function DraftRequestCreation() {
     const { control, handleSubmit, formState: { errors } } = useForm<RequestFormData>({
@@ -39,19 +41,25 @@ export default function DraftRequestCreation() {
         if(process && proof && client) {
             (async function() {
                 const locs = await client.locsState();
-                await locs.requestIdentityLoc({
+                let draftLoc = await locs.requestIdentityLoc({
                     description: "",
                     legalOfficer: client.legalOfficers[0], // TODO comes from sponsorship
                     draft: true,
                     sponsorshipId: undefined, // TODO comes from URL
-                    template: "individual_identity",
+                    template: TEMPLATE_ID,
                     userIdentity: {
                         firstName: formData.firstName,
                         lastName: formData.lastName,
                         email: formData.email,
                         phoneNumber: formData.phoneNumber,
                     }
-                });
+                }) as DraftRequest;
+                await draftLoc.addFile({
+                    file: await HashOrContent.fromContentFinalized(process),
+                    fileName: process.name,
+                    nature: PROCESS_FILE_NATURE,
+                }) as DraftRequest;
+
                 // TODO refresh state
             })();
         }

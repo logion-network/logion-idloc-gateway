@@ -1,8 +1,0 @@
-export enum Status {
-    NOT_CONNECTED,
-    NO_REQUEST,
-    DRAFT_REQUEST,
-    PENDING_REQUEST,
-    REJECTED_REQUEST,
-    APPROVED_REQUEST
-}
