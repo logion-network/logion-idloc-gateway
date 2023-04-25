@@ -1,0 +1,7 @@
+.FormField {
+    margin-top: 20px;
+}
+
+.FormField [class*="-feedback"] {
+    text-align: left;
+}

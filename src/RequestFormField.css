@@ -1,0 +1,14 @@
+.RequestFormField {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.RequestFormField .button-area {
+    margin-top: 20px;
+}
+
+.RequestFormField .file-selector {
+    margin-top: 20px;
+    text-align: left;
+}
