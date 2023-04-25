@@ -10,6 +10,7 @@ export interface ConfigType {
     RPC: object,
     directory: string,
     edgeNodes: Node[],
+    certificateHost: string,
 }
 
 export const DEFAULT_CONFIG: ConfigType = {
@@ -19,6 +20,7 @@ export const DEFAULT_CONFIG: ConfigType = {
     },
     directory: "",
     edgeNodes: [],
+    certificateHost: "certificate.logion.network",
 };
 
 export interface EnvConfigType extends Record<string, any> {

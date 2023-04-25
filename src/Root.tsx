@@ -1,4 +1,5 @@
-import { DraftRequest, LegalOfficerClass, LocRequest, LocRequestState, LocSharedState, hashString } from "@logion/client";
+import { ClosedLoc, DraftRequest, LegalOfficerClass, LocRequest, LocRequestState, LocSharedState, hashString, PendingRequest, OpenLoc, RejectedRequest } from "@logion/client";
+import { LegalOfficerCase } from "@logion/node-api";
 import { AxiosInstance } from "axios";
 import { useCallback, useMemo } from "react";
 import { Container } from "react-bootstrap";
@@ -7,6 +8,7 @@ import DraftRequestCreation from "./DraftRequestCreation";
 import RequestSubmission from "./RequestSubmission";
 import { PROCESS_FILE_NATURE, PROOF_FILE_NATURE } from "./Template";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
+import RequestStatus from "./RequestStatus";
 
 export default function Root() {
     const { client } = useLogionClientContext();
@@ -15,7 +17,7 @@ export default function Root() {
         return {
             contentType: "application/pdf",
             hash: hashString(nature),
-            name: "process_file.pdf",
+            name: "file.pdf",
             nature: nature,
             published: false,
             restrictedDelivery: false,
@@ -24,40 +26,165 @@ export default function Root() {
         };
     }, [ client?.currentAddress ]);
 
+    const buildChainFile = useCallback((nature: string) => {
+        return {
+            hash: hashString(nature),
+            name: "file.pdf",
+            nature: nature,
+            size: 4n,
+            submitter: client?.currentAddress,
+        };
+    }, [ client?.currentAddress ]);
+
     const locState = useMemo<LocRequestState | undefined>(() => { // TODO request state should be provided by the context
+        if(!client?.currentAddress) {
+            return undefined;
+        }
 
-        // Uncomment a return statement to test screen
+        type ScreenType =
+            "DraftRequestCreation" |
+            "RequestSubmission" |
+            "RequestStatusPendingPending" |
+            "RequestStatusRejected" |
+            "RequestStatusPendingOpen" |
+            "RequestStatusRecorded" |
+            string;
 
-        // DraftRequestCreation
-        // return undefined;
+        let screen: ScreenType = "DraftRequestCreation"; // Pick one screen to test in the list above
+        let request: LocRequestState | undefined;
 
-        // RequestSubmission
-        return new DraftRequest(
-            {
-                allLegalOfficers: [
-                    LEGAL_OFFICER
-                ],
-            } as unknown as LocSharedState,
-            {
-                ownerAddress: LEGAL_OFFICER.address,
-                userIdentity: USER_IDENTITY,
-                userPostalAddress: USER_ADDRESS,
-                metadata: [],
-                files: client?.currentAddress ? [
-                    buildFile(PROCESS_FILE_NATURE),
-                    buildFile(PROOF_FILE_NATURE),
-                ] : [],
-                links: [],
-            } as unknown as LocRequest,
-            undefined,
-            LOC_VERIFIED_ISSUERS,
-        );
+        if(screen === "DraftRequestCreation") {
+            request = undefined;
+        } else if(screen === "RequestSubmission") {
+            request = new DraftRequest(
+                {
+                    allLegalOfficers: [
+                        LEGAL_OFFICER
+                    ],
+                } as unknown as LocSharedState,
+                {
+                    ownerAddress: LEGAL_OFFICER.address,
+                    userIdentity: USER_IDENTITY,
+                    userPostalAddress: USER_ADDRESS,
+                    metadata: [],
+                    files: [
+                        buildFile(PROCESS_FILE_NATURE),
+                        buildFile(PROOF_FILE_NATURE),
+                    ],
+                    links: [],
+                    status: "DRAFT",
+                } as unknown as LocRequest,
+                undefined,
+                LOC_VERIFIED_ISSUERS,
+            );
+        } else if(screen === "RequestStatusPendingPending") {
+            request = new PendingRequest(
+                {
+                    allLegalOfficers: [
+                        LEGAL_OFFICER
+                    ],
+                } as unknown as LocSharedState,
+                {
+                    ownerAddress: LEGAL_OFFICER.address,
+                    userIdentity: USER_IDENTITY,
+                    userPostalAddress: USER_ADDRESS,
+                    metadata: [],
+                    files: [
+                        buildFile(PROCESS_FILE_NATURE),
+                        buildFile(PROOF_FILE_NATURE),
+                    ],
+                    links: [],
+                    status: "REQUESTED",
+                } as unknown as LocRequest,
+                undefined,
+                LOC_VERIFIED_ISSUERS,
+            );
+        } else if(screen === "RequestStatusRejected") {
+            request = new RejectedRequest(
+                {
+                    allLegalOfficers: [
+                        LEGAL_OFFICER
+                    ],
+                } as unknown as LocSharedState,
+                {
+                    ownerAddress: LEGAL_OFFICER.address,
+                    userIdentity: USER_IDENTITY,
+                    userPostalAddress: USER_ADDRESS,
+                    metadata: [],
+                    files: [
+                        buildFile(PROCESS_FILE_NATURE),
+                        buildFile(PROOF_FILE_NATURE),
+                    ],
+                    links: [],
+                    status: "REJECTED",
+                    rejectReason: "Wrong data.",
+                } as unknown as LocRequest,
+                undefined,
+                LOC_VERIFIED_ISSUERS,
+            );
+        } else if(screen === "RequestStatusPendingOpen") {
+            request = new OpenLoc(
+                {
+                    allLegalOfficers: [
+                        LEGAL_OFFICER
+                    ],
+                } as unknown as LocSharedState,
+                {
+                    ownerAddress: LEGAL_OFFICER.address,
+                    userIdentity: USER_IDENTITY,
+                    userPostalAddress: USER_ADDRESS,
+                    metadata: [],
+                    files: [
+                        buildFile(PROCESS_FILE_NATURE),
+                        buildFile(PROOF_FILE_NATURE),
+                    ],
+                    links: [],
+                    status: "OPEN",
+                } as unknown as LocRequest,
+                {
+                    files: [
+                        buildChainFile(PROCESS_FILE_NATURE),
+                        buildChainFile(PROOF_FILE_NATURE),
+                    ],
+                } as unknown as LegalOfficerCase,
+                LOC_VERIFIED_ISSUERS,
+            );
+        } else {
+            request = new ClosedLoc(
+                {
+                    allLegalOfficers: [
+                        LEGAL_OFFICER
+                    ],
+                } as unknown as LocSharedState,
+                {
+                    ownerAddress: LEGAL_OFFICER.address,
+                    userIdentity: USER_IDENTITY,
+                    userPostalAddress: USER_ADDRESS,
+                    metadata: [],
+                    files: [
+                        buildFile(PROCESS_FILE_NATURE),
+                        buildFile(PROOF_FILE_NATURE),
+                    ],
+                    links: [],
+                    status: "CLOSED",
+                } as unknown as LocRequest,
+                {
+                    files: [
+                        buildChainFile(PROCESS_FILE_NATURE),
+                        buildChainFile(PROOF_FILE_NATURE),
+                    ],
+                } as unknown as LegalOfficerCase,
+                LOC_VERIFIED_ISSUERS,
+            );
+        }
 
-    }, [ client?.currentAddress, buildFile ]);
+        return request;
+    }, [ client?.currentAddress, buildFile, buildChainFile ]);
 
     return (
         <Container>
             <Header/>
+            { /* TODO display nothing as long as sponsorship was not retrieved */}
             {
                 locState === undefined &&
                 <DraftRequestCreation/>
@@ -65,6 +192,10 @@ export default function Root() {
             {
                 locState instanceof DraftRequest &&
                 <RequestSubmission request={ locState }/>
+            }
+            {
+                locState !== undefined && !(locState instanceof DraftRequest) &&
+                <RequestStatus request={ locState }/>
             }
         </Container>
     );

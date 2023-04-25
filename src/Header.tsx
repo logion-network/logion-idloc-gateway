@@ -12,7 +12,7 @@ export default function Header() {
     return (
         <Row className="Header">
             <Col md={3}>
-                <Logo size={ 170 } />
+                <Logo size={ 120 } />
             </Col>
             <Col>
                 <Row>
