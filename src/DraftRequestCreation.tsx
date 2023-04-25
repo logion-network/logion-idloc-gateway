@@ -14,10 +14,11 @@ export default function DraftRequestCreation() {
             lastName: "",
             email: "",
             phoneNumber: "",
-            address: "",
+            line1: "",
+            line2: "",
             city: "",
             country: "",
-            zip: "",
+            postalCode: "",
         }
     });
     const [ process, setProcess ] = useState<File>();
@@ -52,6 +53,13 @@ export default function DraftRequestCreation() {
                         lastName: formData.lastName,
                         email: formData.email,
                         phoneNumber: formData.phoneNumber,
+                    },
+                    userPostalAddress: {
+                        line1: formData.line1,
+                        line2: formData.line2,
+                        postalCode: formData.postalCode,
+                        city: formData.city,
+                        country: formData.country,
                     }
                 }) as DraftRequest;
                 await draftLoc.addFile({

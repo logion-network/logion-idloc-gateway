@@ -8,8 +8,9 @@ import { PROCESS_FILE_NATURE, PROOF_FILE_NATURE } from "./Template";
 export interface RequestFormData {
     firstName: string;
     lastName: string;
-    address: string;
-    zip: string;
+    line1: string;
+    line2: string;
+    postalCode: string;
     city: string;
     country: string;
     email: string;
@@ -100,34 +101,50 @@ export default function RequestFormField(props: Props) {
             <Row>
                 <Col>
                     <FormField
-                        fieldName="address"
+                        fieldName="line1"
                         control={ props.control }
                         errors={ props.errors }
                         render={ field => (
                             <FormControl
-                                placeholder="Address"
+                                placeholder="Address (line 1)"
                                 disabled={ props.disabled }
                                 { ...field }
                             />
                         )}
-                        requiredMessage="Address is required"
+                        requiredMessage="Address (line 1) is required"
                     />
                 </Col>
             </Row>
             <Row>
                 <Col>
                     <FormField
-                        fieldName="zip"
+                        fieldName="line2"
                         control={ props.control }
                         errors={ props.errors }
                         render={ field => (
                             <FormControl
-                                placeholder="ZIP"
+                                placeholder="Address (line 2)"
                                 disabled={ props.disabled }
                                 { ...field }
                             />
                         )}
-                        requiredMessage="ZIP is required"
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <FormField
+                        fieldName="postalCode"
+                        control={ props.control }
+                        errors={ props.errors }
+                        render={ field => (
+                            <FormControl
+                                placeholder="Postal code"
+                                disabled={ props.disabled }
+                                { ...field }
+                            />
+                        )}
+                        requiredMessage="Postal code is required"
                     />
                 </Col>
                 <Col>

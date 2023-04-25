@@ -43,17 +43,17 @@ export default function Root() {
                 userIdentity: USER_IDENTITY,
                 userPostalAddress: USER_ADDRESS,
                 metadata: [],
-                files: [
+                files: client?.currentAddress ? [
                     buildFile(PROCESS_FILE_NATURE),
                     buildFile(PROOF_FILE_NATURE),
-                ],
+                ] : [],
                 links: [],
             } as unknown as LocRequest,
             undefined,
             LOC_VERIFIED_ISSUERS,
         );
 
-    }, [ buildFile ]);
+    }, [ client?.currentAddress, buildFile ]);
 
     return (
         <Container>

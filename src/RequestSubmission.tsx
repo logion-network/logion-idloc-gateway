@@ -18,10 +18,11 @@ export default function RequestSubmission(props: Props) {
             lastName: props.request.data().userIdentity?.lastName || "",
             email: props.request.data().userIdentity?.email || "",
             phoneNumber: props.request.data().userIdentity?.phoneNumber || "",
-            address: props.request.data().userPostalAddress?.line1 || "",
+            line1: props.request.data().userPostalAddress?.line1 || "",
+            line2: props.request.data().userPostalAddress?.line2 || "",
             city: props.request.data().userPostalAddress?.city || "",
             country: props.request.data().userPostalAddress?.country || "",
-            zip: props.request.data().userPostalAddress?.postalCode || "",
+            postalCode: props.request.data().userPostalAddress?.postalCode || "",
         }
     });
 
