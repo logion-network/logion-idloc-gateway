@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import Centered from "./Centered";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
 import RequestFormField, { RequestFormData } from "./RequestFormFields";
-import { PROCESS_FILE_NATURE, TEMPLATE_ID } from "./Template";
+import { PROCESS_FILE_NATURE, TEMPLATE_ID, PROOF_FILE_NATURE } from "./Template";
 
 export default function DraftRequestCreation() {
     const { control, handleSubmit, formState: { errors } } = useForm<RequestFormData>({
@@ -25,7 +25,7 @@ export default function DraftRequestCreation() {
     const [ processError, setProcessError ] = useState<string>();
     const [ proof, setProof ] = useState<File>();
     const [ proofError, setProofError ] = useState<string>();
-    const { client } = useLogionClientContext();
+    const { client, sponsorshipState, sponsorshipId, refresh } = useLogionClientContext();
 
     const validateFiles = useCallback(() => {
         if(!process) {
@@ -41,12 +41,15 @@ export default function DraftRequestCreation() {
 
         if(process && proof && client) {
             (async function() {
+                if (sponsorshipState === null || sponsorshipId === null) {
+                    return
+                }
                 const locs = await client.locsState();
-                let draftLoc = await locs.requestIdentityLoc({
-                    description: "",
-                    legalOfficer: client.legalOfficers[0], // TODO comes from sponsorship
+                const draftLoc = await locs.requestIdentityLoc({
+                    description: `KYC ${ formData.firstName } ${ formData.lastName } - ${ client.currentAddress?.toKey() }`,
+                    legalOfficer: sponsorshipState.legalOfficer,
                     draft: true,
-                    sponsorshipId: undefined, // TODO comes from URL
+                    sponsorshipId: sponsorshipId,
                     template: TEMPLATE_ID,
                     userIdentity: {
                         firstName: formData.firstName,
@@ -62,16 +65,21 @@ export default function DraftRequestCreation() {
                         country: formData.country,
                     }
                 }) as DraftRequest;
-                await draftLoc.addFile({
+                const draftLocWithFirstFile = await draftLoc.addFile({
                     file: await HashOrContent.fromContentFinalized(process),
                     fileName: process.name,
                     nature: PROCESS_FILE_NATURE,
-                }) as DraftRequest;
+                });
+                await draftLocWithFirstFile.addFile({
+                    file: await HashOrContent.fromContentFinalized(proof),
+                    fileName: proof.name,
+                    nature: PROOF_FILE_NATURE,
+                });
 
-                // TODO refresh state
+                await refresh();
             })();
         }
-    }, [ process, proof, client, validateFiles ]);
+    }, [ process, proof, client, validateFiles, sponsorshipId, sponsorshipState, refresh ]);
 
     const handleInvalidForm = useCallback(() => {
         validateFiles();

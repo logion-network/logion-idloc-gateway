@@ -5,6 +5,7 @@ import config from './config/index';
 import StatusIcon, { isPending, isRecorded, isRejected } from "./StatusIcon";
 import "./RequestStatus.css";
 import ButtonBar from "./ButtonBar";
+import { useLogionClientContext } from "./logion-chain/LogionClientContext";
 
 export interface Props {
     request: LocRequestState;
@@ -13,13 +14,13 @@ export interface Props {
 export default function RequestStatus(props: Props) {
 
     const status = useMemo(() => props.request.data().status, [ props.request ]);
-
+    const { refresh } = useLogionClientContext();
     const restart = useCallback(async () => {
         if(props.request instanceof RejectedRequest) {
             await props.request.cancel();
-            // TODO refresh
+            await refresh();
         }
-    }, [ props.request ]);
+    }, [ props.request, refresh ]);
 
     return (
         <div className="RequestStatus">

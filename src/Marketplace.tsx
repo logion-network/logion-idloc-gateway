@@ -1,3 +1,11 @@
+import { useLogionClientContext } from "./logion-chain/LogionClientContext";
+
 export default function Marketplace() {
-    return <p>Marketplace ID: nnn</p>;
+    const { sponsorshipState } = useLogionClientContext();
+
+    if (sponsorshipState === null) {
+        return null;
+    }
+
+    return <p>Marketplace ID: { sponsorshipState.sponsorship.sponsor.address }</p>;
 }
