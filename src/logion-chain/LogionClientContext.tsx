@@ -54,8 +54,10 @@ export default function LogionClientContextProvider(props: Props) {
         })
     }, [])
 
+    let staticStateInitializing = false;
     useEffect(() => {
-        if (staticState.client === null && dynamicState.errorMessage === null) {
+        if (staticState.client === null && dynamicState.errorMessage === null && !staticStateInitializing) {
+            staticStateInitializing = true;
             (async function () {
                     let errorMessage = "";
                     try {
@@ -88,8 +90,10 @@ export default function LogionClientContextProvider(props: Props) {
         }
     }, [ staticState, dynamicState, refresh, sponsorshipIdParam ]);
 
+    let dynamicStateInitializing = false;
     useEffect(() => {
-        if (dynamicState.sponsorshipState === null && dynamicState.errorMessage === null && staticState.client !== null && staticState.sponsorshipId !== null) {
+        if (dynamicState.sponsorshipState === null && dynamicState.errorMessage === null && staticState.client !== null && staticState.sponsorshipId !== null && !dynamicStateInitializing) {
+            dynamicStateInitializing = true;
             (async function () {
                     let errorMessage = "";
                     try {
