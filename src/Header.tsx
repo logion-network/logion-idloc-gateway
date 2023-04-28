@@ -4,7 +4,7 @@ import { useLogionClientContext } from "./logion-chain/LogionClientContext";
 import "./Header.css";
 import LegalOfficer from "./LegalOfficer";
 import YourAddress from "./YourAddress";
-import Marketplace from "./Marketplace";
+import Sponsor from "./Sponsor";
 
 export default function Header() {
     const { client } = useLogionClientContext();
@@ -27,7 +27,7 @@ export default function Header() {
                 </Row>
                 <Row>
                     <Col>
-                        <Marketplace/>
+                        <Sponsor/>
                     </Col>
                 </Row>
             </Col>
