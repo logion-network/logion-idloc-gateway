@@ -1,7 +1,7 @@
 import config from '../config/index';
 import { LogionClient, DefaultSignAndSendStrategy, SponsorshipState } from "@logion/client";
 import { enableMetaMask, allMetamaskAccounts, ExtensionSigner } from "@logion/extension";
-import { UUID, LogionNodeApiClass } from "@logion/node-api";
+import { UUID } from "@logion/node-api";
 import { Context, createContext, ReactNode, useState, useEffect, useContext, useCallback } from "react";
 import { useParams } from "react-router-dom";
 
@@ -46,9 +46,7 @@ export default function LogionClientContextProvider(props: Props) {
     const sponsorshipIdParam = useParams<"sponsorshipId">().sponsorshipId;
 
     const refresh = useCallback(async (currentSponsorshipState: SponsorshipState) => {
-        console.log("Refreshing...");
         const newSponsorshipState = await currentSponsorshipState.refresh();
-        console.log("newSponsorshipState: %s", newSponsorshipState.locRequestState?.data().status);
         setDynamicState({
             errorMessage: null,
             sponsorshipState: newSponsorshipState,
@@ -57,65 +55,63 @@ export default function LogionClientContextProvider(props: Props) {
     }, [])
 
     useEffect(() => {
-        (async function () {
-            if (staticState.client === null && dynamicState.errorMessage === null) {
-                let errorMessage = "";
-                try {
-                    const sponsorshipId = sponsorshipIdParam ? UUID.fromAnyString(sponsorshipIdParam) : undefined;
-                    if (sponsorshipId !== undefined) {
-                        const client = await connectToLogionWithMetamask();
-                        setStaticState({
-                            client,
-                            sponsorshipId,
-                        })
-                    } else {
-                        errorMessage = `Unable to detect a valid Sponsorship ID: ${ sponsorshipIdParam }`;
-                    }
-                } catch (e: any) {
-                    if ("message" in e) {
-                        errorMessage = e.message;
-                    } else {
-                        errorMessage = "" + e;
-                    }
-                } finally {
-                    if (errorMessage.length > 0) {
-                        setDynamicState({
-                            ...dynamicState,
-                            errorMessage,
-                        })
+        if (staticState.client === null && dynamicState.errorMessage === null) {
+            (async function () {
+                    let errorMessage = "";
+                    try {
+                        const sponsorshipId = sponsorshipIdParam ? UUID.fromAnyString(sponsorshipIdParam) : undefined;
+                        if (sponsorshipId !== undefined) {
+                            const client = await connectToLogionWithMetamask();
+                            setStaticState({
+                                client,
+                                sponsorshipId,
+                            })
+                        } else {
+                            errorMessage = `Unable to detect a valid Sponsorship ID: ${ sponsorshipIdParam }`;
+                        }
+                    } catch (e: any) {
+                        if ("message" in e) {
+                            errorMessage = e.message;
+                        } else {
+                            errorMessage = "" + e;
+                        }
+                    } finally {
+                        if (errorMessage.length > 0) {
+                            setDynamicState({
+                                ...dynamicState,
+                                errorMessage,
+                            })
+                        }
                     }
                 }
-            }
-        })()
+            )()
+        }
     }, [ staticState, dynamicState, refresh, sponsorshipIdParam ]);
 
     useEffect(() => {
-        (async function () {
-            if (dynamicState.sponsorshipState === null && dynamicState.errorMessage === null && staticState.client !== null && staticState.sponsorshipId !== null) {
-                let errorMessage = "";
-                try {
-                    const sponsorshipState = await staticState.client.sponsorshipState(staticState.sponsorshipId);
-                    if (sponsorshipState !== undefined) {
+        if (dynamicState.sponsorshipState === null && dynamicState.errorMessage === null && staticState.client !== null && staticState.sponsorshipId !== null) {
+            (async function () {
+                    let errorMessage = "";
+                    try {
+                        const sponsorshipState = await staticState.client!.sponsorshipState(staticState.sponsorshipId!);
                         setDynamicState({
                             errorMessage: null,
                             sponsorshipState,
                             refresh: () => refresh(sponsorshipState)
                         })
-                    } else {
-                        errorMessage = "Unable to find a valid Sponsorship";
-                    }
-                } catch (e: any) {
-                    errorMessage = "" + e;
-                } finally {
-                    if (errorMessage.length > 0) {
-                        setDynamicState({
-                            ...dynamicState,
-                            errorMessage,
-                        })
+                    } catch (e: any) {
+                        errorMessage = "" + e;
+                    } finally {
+                        if (errorMessage.length > 0) {
+                            setDynamicState({
+                                ...dynamicState,
+                                errorMessage,
+                            })
+                        }
                     }
                 }
-            }
-        })()
+            )()
+        }
     }, [ staticState, dynamicState, refresh, sponsorshipIdParam ]);
 
     return (
@@ -148,9 +144,8 @@ async function connectToLogionWithMetamask(): Promise<LogionClient> {
     const metaMaskEnabled = await enableMetaMask(config.APP_NAME);
     if (metaMaskEnabled) {
         const metamaskAccounts = await allMetamaskAccounts();
-        const api = new LogionNodeApiClass(anonymousClient.nodeApi);
         const validAccounts = metamaskAccounts.map(account =>
-            api.adapters.getValidAccountId(account.address, "Ethereum")
+            anonymousClient.logionApi.adapters.getValidAccountId(account.address, "Ethereum")
         );
         return await anonymousClient.authenticate(validAccounts, new ExtensionSigner(SIGN_AND_SEND_STRATEGY))
     } else {
