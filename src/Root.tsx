@@ -6,9 +6,11 @@ import RequestSubmission from "./RequestSubmission";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
 import RequestStatus from "./RequestStatus";
 import TemporaryStatus from "./TemporaryStatus";
+import IdentityVerification from "./IdentityVerification";
+import IdentityResult from "./IdentityResult";
 
 export default function Root() {
-    const { errorMessage, sponsorshipState } = useLogionClientContext();
+    const { errorMessage, sponsorshipState, backendConfig, idenfyResult } = useLogionClientContext();
 
     const locState = sponsorshipState?.locRequestState;
 
@@ -25,7 +27,20 @@ export default function Root() {
             }
             {
                 sponsorshipState !== null && sponsorshipState.locRequestState instanceof DraftRequest &&
+                (!backendConfig?.features.iDenfy || sponsorshipState.locRequestState.data().iDenfy === undefined) &&
                 <RequestSubmission request={ sponsorshipState.locRequestState }/>
+            }
+            {
+                sponsorshipState !== null && sponsorshipState.locRequestState instanceof DraftRequest &&
+                (backendConfig?.features.iDenfy && sponsorshipState.locRequestState.data().iDenfy !== undefined) &&
+                !idenfyResult &&
+                <IdentityVerification request={ sponsorshipState.locRequestState }/>
+            }
+            {
+                sponsorshipState !== null && sponsorshipState.locRequestState instanceof DraftRequest &&
+                (backendConfig?.features.iDenfy && sponsorshipState.locRequestState.data().iDenfy !== undefined) &&
+                idenfyResult &&
+                <IdentityResult request={ sponsorshipState.locRequestState } idenfyResult={ idenfyResult }/>
             }
             {
                 sponsorshipState !== null && sponsorshipState.locRequestState !== undefined && !(locState instanceof DraftRequest) &&

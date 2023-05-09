@@ -1,6 +1,6 @@
 import { DraftRequest, HashOrContent } from "@logion/client";
 import { ChangeEvent, useCallback, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import Centered from "./Centered";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
@@ -26,6 +26,7 @@ export default function DraftRequestCreation() {
     const [ proof, setProof ] = useState<File>();
     const [ proofError, setProofError ] = useState<string>();
     const { client, sponsorshipState, sponsorshipId, refresh } = useLogionClientContext();
+    const [ creating, setCreating ] = useState(false);
 
     const validateFiles = useCallback(() => {
         if(!process) {
@@ -40,6 +41,7 @@ export default function DraftRequestCreation() {
         validateFiles();
 
         if(process && proof && client) {
+            setCreating(true);
             (async function() {
                 if (sponsorshipState === null || sponsorshipId === null) {
                     return
@@ -77,6 +79,7 @@ export default function DraftRequestCreation() {
                 });
 
                 await refresh();
+                setCreating(false);
             })();
         }
     }, [ process, proof, client, validateFiles, sponsorshipId, sponsorshipState, refresh ]);
@@ -118,7 +121,14 @@ export default function DraftRequestCreation() {
                     <Col>
                         <div className="button-area">
                             <Centered>
-                                <Button type="submit">Create draft LOC request</Button>
+                            {
+                                    creating &&
+                                    <Spinner/>
+                                }
+                                {
+                                    !creating &&
+                                    <Button type="submit">Create draft LOC request</Button>
+                                }
                             </Centered>
                         </div>
                     </Col>

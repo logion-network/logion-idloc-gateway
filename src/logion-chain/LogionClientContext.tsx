@@ -1,18 +1,21 @@
 import config from '../config/index';
-import { LogionClient, DefaultSignAndSendStrategy, SponsorshipState } from "@logion/client";
+import { LogionClient, DefaultSignAndSendStrategy, SponsorshipState, BackendConfig } from "@logion/client";
 import { enableMetaMask, allMetamaskAccounts, ExtensionSigner } from "@logion/extension";
 import { UUID } from "@logion/node-api";
 import { Context, createContext, ReactNode, useState, useEffect, useContext, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { PARAM_IDENFY_RESULT } from 'src/Paths';
 
 interface StaticState {
     client: LogionClient | null;
     sponsorshipId: UUID | null;
+    idenfyResult: string | null;
 }
 
 export interface DynamicState {
     sponsorshipState: SponsorshipState | null;
     errorMessage: string | null;
+    backendConfig: BackendConfig | null;
     refresh: () => Promise<void>;
 }
 
@@ -22,11 +25,13 @@ export interface LogionClientContextType extends StaticState, DynamicState {
 const INITIAL_STATIC_STATE: StaticState = {
     client: null,
     sponsorshipId: null,
+    idenfyResult: null,
 }
 
 const INITIAL_DYNAMIC_STATE: DynamicState = {
     sponsorshipState: null,
     errorMessage: null,
+    backendConfig: null,
     refresh: () => Promise.reject(),
 }
 
@@ -41,82 +46,87 @@ export interface Props {
 
 export default function LogionClientContextProvider(props: Props) {
     const [ staticState, setStaticState ] = useState<StaticState>(INITIAL_STATIC_STATE);
+    const [ staticStateInitializing, setStaticStateInitializing ] = useState(false);
     const [ dynamicState, setDynamicState ] = useState<DynamicState>(INITIAL_DYNAMIC_STATE);
+    const [ dynamicStateInitializing, setDynamicStateInitializing ] = useState(false);
+    const [ searchParams ] = useSearchParams();
 
     const sponsorshipIdParam = useParams<"sponsorshipId">().sponsorshipId;
+    const idenfyResult = searchParams.get(PARAM_IDENFY_RESULT);
 
     const refresh = useCallback(async (currentSponsorshipState: SponsorshipState) => {
         const newSponsorshipState = await currentSponsorshipState.refresh();
+        const backendConfig = await newSponsorshipState.legalOfficer.getConfig();
         setDynamicState({
             errorMessage: null,
             sponsorshipState: newSponsorshipState,
+            backendConfig,
             refresh: () => refresh(newSponsorshipState)
-        })
-    }, [])
+        });
+    }, []);
 
-    let staticStateInitializing = false;
     useEffect(() => {
         if (staticState.client === null && dynamicState.errorMessage === null && !staticStateInitializing) {
-            staticStateInitializing = true;
+            setStaticStateInitializing(true);
             (async function () {
-                    let errorMessage = "";
-                    try {
-                        const sponsorshipId = sponsorshipIdParam ? UUID.fromAnyString(sponsorshipIdParam) : undefined;
-                        if (sponsorshipId !== undefined) {
-                            const client = await connectToLogionWithMetamask();
-                            setStaticState({
-                                client,
-                                sponsorshipId,
-                            })
-                        } else {
-                            errorMessage = `Unable to detect a valid Sponsorship ID: ${ sponsorshipIdParam }`;
-                        }
-                    } catch (e: any) {
-                        if ("message" in e) {
-                            errorMessage = e.message;
-                        } else {
-                            errorMessage = "" + e;
-                        }
-                    } finally {
-                        if (errorMessage.length > 0) {
-                            setDynamicState({
-                                ...dynamicState,
-                                errorMessage,
-                            })
-                        }
+                let errorMessage = "";
+                try {
+                    const sponsorshipId = sponsorshipIdParam ? UUID.fromAnyString(sponsorshipIdParam) : undefined;
+                    if (sponsorshipId !== undefined) {
+                        const client = await connectToLogionWithMetamask();
+                        setStaticState({
+                            client,
+                            sponsorshipId,
+                            idenfyResult,
+                        })
+                    } else {
+                        errorMessage = `Unable to detect a valid Sponsorship ID: ${ sponsorshipIdParam }`;
+                    }
+                } catch (e: any) {
+                    if ("message" in e) {
+                        errorMessage = e.message;
+                    } else {
+                        errorMessage = "" + e;
+                    }
+                } finally {
+                    if (errorMessage.length > 0) {
+                        setDynamicState({
+                            ...dynamicState,
+                            errorMessage,
+                        })
                     }
                 }
-            )()
+            })();
         }
-    }, [ staticState, dynamicState, refresh, sponsorshipIdParam ]);
+    }, [ staticState, dynamicState, refresh, sponsorshipIdParam, idenfyResult, staticStateInitializing ]);
 
-    let dynamicStateInitializing = false;
     useEffect(() => {
         if (dynamicState.sponsorshipState === null && dynamicState.errorMessage === null && staticState.client !== null && staticState.sponsorshipId !== null && !dynamicStateInitializing) {
-            dynamicStateInitializing = true;
+            setDynamicStateInitializing(true);
             (async function () {
-                    let errorMessage = "";
-                    try {
-                        const sponsorshipState = await staticState.client!.sponsorshipState(staticState.sponsorshipId!);
+                let errorMessage = "";
+                try {
+                    const sponsorshipState = await staticState.client!.sponsorshipState(staticState.sponsorshipId!);
+                    const backendConfig = await sponsorshipState.legalOfficer.getConfig();
+                    setDynamicState({
+                        errorMessage: null,
+                        sponsorshipState,
+                        backendConfig,
+                        refresh: () => refresh(sponsorshipState)
+                    })
+                } catch (e: any) {
+                    errorMessage = "" + e;
+                } finally {
+                    if (errorMessage.length > 0) {
                         setDynamicState({
-                            errorMessage: null,
-                            sponsorshipState,
-                            refresh: () => refresh(sponsorshipState)
+                            ...dynamicState,
+                            errorMessage,
                         })
-                    } catch (e: any) {
-                        errorMessage = "" + e;
-                    } finally {
-                        if (errorMessage.length > 0) {
-                            setDynamicState({
-                                ...dynamicState,
-                                errorMessage,
-                            })
-                        }
                     }
                 }
-            )()
+            })();
         }
-    }, [ staticState, dynamicState, refresh, sponsorshipIdParam ]);
+    }, [ staticState, dynamicState, refresh, sponsorshipIdParam, dynamicStateInitializing ]);
 
     return (
         <LogionClientContext.Provider value={ {
