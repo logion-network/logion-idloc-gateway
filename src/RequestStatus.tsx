@@ -2,7 +2,7 @@ import { LocRequestState, RejectedRequest } from "@logion/client";
 import { useCallback, useMemo } from "react";
 import { Button } from "react-bootstrap";
 import config from './config/index';
-import StatusIcon, { isPending, isRecorded, isRejected, isVoided } from "./StatusIcon";
+import LocStatusIcon, { isPending, isRecorded, isRejected, isVoided } from "./LocStatusIcon";
 import "./RequestStatus.css";
 import ButtonBar from "./ButtonBar";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
@@ -25,7 +25,7 @@ export default function RequestStatus(props: Props) {
     return (
         <div className="RequestStatus">
             <h2>Identity LOC request status</h2>
-            <StatusIcon loc={ loc }/>
+            <LocStatusIcon loc={ loc }/>
             {
                 isPending(loc) &&
                 <p>Pending</p>

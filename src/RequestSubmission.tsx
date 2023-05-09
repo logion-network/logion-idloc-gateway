@@ -7,13 +7,14 @@ import RequestFormField, { RequestFormData } from "./RequestFormFields";
 import { PROCESS_FILE_NATURE, PROOF_FILE_NATURE } from "./Template";
 import "./RequestSubmission.css";
 import { useLogionClientContext } from "./logion-chain/LogionClientContext";
+import { useCancelCallback, useStartIdAmlCheckCallback, useSubmitCallback } from "./Callbacks";
 
 export interface Props {
     request: DraftRequest;
 }
 
 export default function RequestSubmission(props: Props) {
-    const { refresh } = useLogionClientContext();
+    const { refresh, backendConfig, sponsorshipId } = useLogionClientContext();
     const { control, formState: { errors } } = useForm<RequestFormData>({
         values: {
             firstName: props.request.data().userIdentity?.firstName || "",
@@ -46,15 +47,9 @@ export default function RequestSubmission(props: Props) {
         await downloadFileByNature(PROOF_FILE_NATURE);
     }, [ downloadFileByNature ]);
 
-    const submit = useCallback(async (request: DraftRequest) => {
-        await request.submit();
-        await refresh();
-    }, [ refresh ]);
-
-    const cancel = useCallback(async (request: DraftRequest) => {
-        await request.cancel();
-        await refresh();
-    }, [ refresh ]);
+    const submit = useSubmitCallback(props.request, refresh);
+    const cancel = useCancelCallback(props.request, refresh);
+    const start = useStartIdAmlCheckCallback(props.request, sponsorshipId);
 
     return (
         <div className="RequestSubmission">
@@ -73,15 +68,24 @@ export default function RequestSubmission(props: Props) {
             <ButtonBar>
                 <Button
                     variant="danger"
-                    onClick={ () => cancel(props.request) }
+                    onClick={ cancel }
                 >
                     Cancel request
                 </Button>
-                <Button
-                    onClick={ () => submit(props.request) }
-                >
-                    Submit request
-                </Button>
+                {
+                    (!backendConfig?.features.iDenfy) &&
+                    <Button
+                        onClick={ submit }
+                    >
+                        Submit request
+                    </Button>
+                }
+                {
+                    backendConfig?.features.iDenfy &&
+                    <Button onClick={ start }>
+                        Start ID/AML check through iDenfy
+                    </Button>
+                }
             </ButtonBar>
         </div>
     );
