@@ -17,7 +17,7 @@ export function useCancelCallback(request: DraftRequest, refresh: () => Promise<
     }, [ request, refresh ]);
 }
 
-export function useStartIdAmlCheckCallback(request: DraftRequest, sponsorshipId: UUID | null) {
+export function useStartIdAmlCheckCallback(request: DraftRequest, sponsorshipId: UUID | null, refresh: () => Promise<void>) {
     return useCallback(async () => {
         if(sponsorshipId) {
             const newState = await request.startNewIDenfySession({
@@ -25,7 +25,8 @@ export function useStartIdAmlCheckCallback(request: DraftRequest, sponsorshipId:
                 errorUrl: resumeAfterIDenfyProcessUrl("error", sponsorshipId),
                 unverifiedUrl: resumeAfterIDenfyProcessUrl("unverified", sponsorshipId),
             });
-            window.location.href = newState.iDenfySessionUrl;
+            window.open(newState.iDenfySessionUrl, '_blank')?.focus();
+            await refresh();
         }
-    }, [ request, sponsorshipId ]);
+    }, [ request, sponsorshipId, refresh ]);
 }

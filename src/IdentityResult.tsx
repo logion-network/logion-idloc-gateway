@@ -16,7 +16,7 @@ export default function IdentityResult(props: Props) {
 
     const submit = useSubmitCallback(props.request, refresh);
     const cancel = useCancelCallback(props.request, refresh);
-    const start = useStartIdAmlCheckCallback(props.request, sponsorshipId);
+    const start = useStartIdAmlCheckCallback(props.request, sponsorshipId, refresh);
 
     return (
         <div className="IdentityResult">
