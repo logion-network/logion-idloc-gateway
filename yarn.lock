@@ -2390,32 +2390,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@logion/client@npm:^0.25.0-1":
-  version: 0.25.0-2
-  resolution: "@logion/client@npm:0.25.0-2"
+"@logion/client@npm:^0.25.0":
+  version: 0.25.0
+  resolution: "@logion/client@npm:0.25.0"
   dependencies:
-    "@logion/node-api": ^0.14.0-4
+    "@logion/node-api": ^0.14.0
     axios: ^0.27.2
     luxon: ^3.0.1
     mime-db: ^1.52.0
-  checksum: ed7e17ccc75bfe7f297c2fdb4141d9d8ad7a820b6865b56e407a2c7254058df06fc1ef97f726d697ad856d510ee7747bceb45211f30a23c79f24c2acec453c87
+  checksum: 08220cff7e9ad1cbfa8429749e67b0b0d32f4f42c8538b1b11bd13987f72c0a6787fe5f94650b49183a7afede8b17231e8e21f8500d5883f14cd5167a70e747a
   languageName: node
   linkType: hard
 
-"@logion/extension@npm:^0.5.13-2":
-  version: 0.5.13-2
-  resolution: "@logion/extension@npm:0.5.13-2"
+"@logion/extension@npm:^0.5.13":
+  version: 0.5.13
+  resolution: "@logion/extension@npm:0.5.13"
   dependencies:
-    "@logion/client": ^0.25.0-1
+    "@logion/client": ^0.25.0
     "@polkadot/extension-compat-metamask": ^0.46.1
     "@polkadot/extension-dapp": ^0.46.1
-  checksum: 7c090a7ef2f667f5b7fb89f77b4e2227373f9a01d3ef6f977bf44f38c08d327a6589562e37e4a539bede70dac458830518d0bc5a00b199d5daafb4157b6bae02
+  checksum: 74fa121ab692e28b953ea39547bd2a995ac9a2ecd3f23775f10007f24fd98f047d1603713739b5e1d9f6e5caf377566d86a739f1288ea43aa6b2f59a395ff128
   languageName: node
   linkType: hard
 
-"@logion/node-api@npm:^0.14.0-4":
-  version: 0.14.0-4
-  resolution: "@logion/node-api@npm:0.14.0-4"
+"@logion/node-api@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@logion/node-api@npm:0.14.0"
   dependencies:
     "@polkadot/api": ^10.4.1
     "@polkadot/util": ^12.0.1
@@ -2423,7 +2423,7 @@ __metadata:
     "@types/uuid": ^8.3.4
     fast-sha256: ^1.3.0
     uuid: ^8.3.2
-  checksum: c60fa32f15f94eb4f9f8ff75aea5d84ecb634dac6eefd07409baa35cb0c332051182c8da44dd0a9ab5fa87e697c3a49293ef48f7658e13966b0905c6f04b0aa7
+  checksum: 17698ea64d62ed7f3adae5fd2196fe335299753d0f350e04d3f966f830cae00750806472d1dd802260847efc487772e48de99f61238251d1eb454de926058d32
   languageName: node
   linkType: hard
 
@@ -10569,7 +10569,7 @@ __metadata:
   resolution: "logion-idloc-gateway@workspace:."
   dependencies:
     "@craco/craco": ^6.4.5
-    "@logion/extension": ^0.5.13-2
+    "@logion/extension": ^0.5.13
     "@types/react-dom": ^18.0.6
     "@types/react-router-dom": ^5.3.3
     bootstrap: ^5.2.3

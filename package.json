@@ -1,6 +1,6 @@
 {
     "name": "logion-idloc-gateway",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "private": true,
     "author": {
         "name": "Logion Team",
@@ -10,7 +10,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@craco/craco": "^6.4.5",
-        "@logion/extension": "^0.5.13-2",
+        "@logion/extension": "^0.5.13",
         "bootstrap": "^5.2.3",
         "eslint-config-react-app": "^7.0.1",
         "process": "^0.11.10",
